@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>2026</title>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: black;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <canvas id="c"></canvas>
+
+
+    <audio id="bgMusic" autoplay loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const c = document.getElementById("c");
+        const x = c.getContext("2d");
+
+
+        const music = document.getElementById("bgMusic");
+        music.volume = 0.8;
+
+        function autoPlayMusic() {
+            music.play().catch(() => { });
+        }
+        
+        window.addEventListener("load", autoPlayMusic);
+        document.addEventListener("click", autoPlayMusic);
+        document.addEventListener("mousemove", autoPlayMusic);
+        document.addEventListener("scroll", autoPlayMusic);
+
+        function resize() {
+            c.width = innerWidth;
+            c.height = innerHeight;
+        }
+        resize();
+        addEventListener("resize", resize);
+
+        let t = 0;
+
+        const phrases = [
+            "Welcome to 2026.",
+            "You said you'd improve.",
+            "You did not.",
+            "Drink water.",
+            "Go to the gym.",
+            "Sleep earlier.",
+            "Stop procrastinating.",
+            "Single again this year",
+            "Less screen time.",
+            "You are still scrolling.",
+            "No one cares about you.",
+            "Be consistent.",
+            "Try again tomorrow.",
+            "Do better."
+        ];
+
+        const emojis = ["📈", "⏰", "💼", "📊", "☕", "🧠", "💻"];
+
+        const rain = Array.from({ length: 70 }, () => ({
+            x: Math.random() * innerWidth,
+            y: Math.random() * innerHeight,
+            s: Math.random() * 28 + 18,
+            v: Math.random() * 3 + 1,
+            e: emojis[Math.floor(Math.random() * emojis.length)]
+        }));
+
+        function bg() {
+            const g = x.createLinearGradient(0, 0, c.width, c.height);
+            g.addColorStop(0, `hsl(${t % 360},40%,20%)`);
+            g.addColorStop(1, `hsl(${(t + 120) % 360},40%,10%)`);
+            x.fillStyle = g;
+            x.fillRect(0, 0, c.width, c.height);
+        }
+
+        function text() {
+                const phrase = phrases[Math.floor(t / 100) % phrases.length];
+
+                x.save();
+                x.translate(c.width / 2, c.height / 2);
+
+
+                const size = c.width / 12;
+                x.font = "bold " + size + "px Arial";
+                x.textAlign = "center";
+
+                x.fillStyle = "red";
+                x.fillText(phrase, -4, 0);
+
+                x.fillStyle = "cyan";
+                x.fillText(phrase, 4, 0);
+
+                x.fillStyle = "white";
+                x.fillText(phrase, 0, 0);
+
+                x.restore();
+            }
+
+        function drawRain() {
+            rain.forEach(r => {
+                x.font = r.s + "px serif";
+                x.fillText(r.e, r.x, r.y);
+                r.y += r.v;
+
+                if (r.y > c.height + 50) {
+                    r.y = -50;
+                    r.x = Math.random() * c.width;
+                }
+            });
+        }
+
+        function border() {
+            x.lineWidth = 8;
+            x.strokeStyle = "white";
+            x.strokeRect(0, 0, c.width, c.height);
+        }
+
+        function loop() {
+            x.clearRect(0, 0, c.width, c.height);
+            bg();
+            drawRain();
+            text();
+            border();
+            t++;
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+
+</body>
+
+</html>
